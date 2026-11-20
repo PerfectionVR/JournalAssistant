@@ -1,0 +1,21 @@
+# build output
+dist/
+*.zip
+
+# tooling
+node_modules/
+__pycache__/
+*.pyc
+
+# editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# never commit saved variables or WoW folders copied in by accident
+WTF/
+SavedVariables/
+.release/

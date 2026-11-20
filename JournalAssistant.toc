@@ -1,0 +1,97 @@
+## Interface: 16001, 120105
+## Title: |cffd4af37Journal|r Assistant
+## Notes: Plans your next steps in World of Warcraft: Forever: professions, class quests, books and camping, with optional waypoint navigation. /ja to open.
+## Author: PerfectionVR
+## Version: @project-version@
+## X-License: MIT
+## X-Website: https://github.com/PerfectionVR/JournalAssistant
+## Category-enUS: Quests
+## IconTexture: Interface\Icons\INV_Misc_Book_09
+## SavedVariables: JA_DB
+## SavedVariablesPerCharacter: JA_CharDB
+## OptionalDeps: TomTom, Auctionator, LibStub, LibDataBroker-1.1, LibDBIcon-1.0
+
+# Core (generic, reusable)
+Core\Core.lua
+Core\Inventory.lua
+Core\Prices.lua
+Core\Routes.lua
+Core\Navigation.lua
+Core\Diagnostics.lua
+Core\Commands.lua
+
+# Data: world, then one file per profession and per class, then guide data
+Data\World.lua
+Data\Professions\Common.lua
+Data\Professions\Alchemy.lua
+Data\Professions\Blacksmithing.lua
+Data\Professions\Cooking.lua
+Data\Professions\Enchanting.lua
+Data\Professions\Engineering.lua
+Data\Professions\FirstAid.lua
+Data\Professions\Fishing.lua
+Data\Professions\Herbalism.lua
+Data\Professions\Leatherworking.lua
+Data\Professions\Mining.lua
+Data\Professions\Skinning.lua
+Data\Professions\Tailoring.lua
+Data\Professions\Recipes\Alchemy.lua
+Data\Professions\Recipes\Blacksmithing.lua
+Data\Professions\Recipes\Cooking.lua
+Data\Professions\Recipes\Enchanting.lua
+Data\Professions\Recipes\Engineering.lua
+Data\Professions\Recipes\FirstAid.lua
+Data\Professions\Recipes\Leatherworking.lua
+Data\Professions\Recipes\Tailoring.lua
+Data\Classes\Common.lua
+Data\Classes\Druid.lua
+Data\Classes\Hunter.lua
+Data\Classes\Mage.lua
+Data\Classes\Paladin.lua
+Data\Classes\Priest.lua
+Data\Classes\Rogue.lua
+Data\Classes\Shaman.lua
+Data\Classes\Warlock.lua
+Data\Classes\Warrior.lua
+Data\Guides\Books.lua
+Data\Guides\Camping.lua
+
+# Planner engine (generic)
+Planner\Planner.lua
+Planner\Actions.lua
+
+# UI (generic)
+UI\Theme.lua
+UI\Dashboard.lua
+UI\TaskRows.lua
+UI\PlanTab.lua
+UI\GroupTabs.lua
+UI\Tracker.lua
+UI\Minimap.lua
+UI\Settings.lua
+
+# Professions module
+Professions\Professions.lua
+Professions\Recipes.lua
+Professions\Trainers.lua
+Professions\Helpers.lua
+Professions\Ranks.lua
+Professions\BetterRecipes.lua
+Professions\Crafting.lua
+Professions\Gathering.lua
+Professions\Skinning.lua
+Professions\Fishing.lua
+Professions\Obtain.lua
+Professions\Plan.lua
+Professions\Tab.lua
+
+# Guides module (class quests, library books, camping)
+Guides\QuestChains.lua
+Guides\Books.lua
+Guides\Plan.lua
+Guides\ChainTasks.lua
+Guides\ClassQuests.lua
+Guides\BookTasks.lua
+Guides\Camping.lua
+
+Init.lua

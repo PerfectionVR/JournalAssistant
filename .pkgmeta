@@ -1,0 +1,13 @@
+# Build instructions for the BigWigs packager (https://github.com/BigWigsMods/packager).
+package-as: JournalAssistant
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
+ignore:
+  - .github
+  - .gitignore
+  - tests
+  - build.ps1
+  - dist

@@ -1,0 +1,14 @@
+<Bindings>
+	<Binding name="JA_TOGGLE_ARROW" header="JA" category="ADDONS">
+		JournalAssistantAPI.ToggleArrow()
+	</Binding>
+	<Binding name="JA_NAVIGATE" category="ADDONS">
+		JournalAssistantAPI.Navigate()
+	</Binding>
+	<Binding name="JA_NEXT" category="ADDONS">
+		JournalAssistantAPI.NextTask()
+	</Binding>
+	<Binding name="JA_TOGGLE_DASHBOARD" category="ADDONS">
+		JournalAssistantAPI.ToggleDashboard()
+	</Binding>
+</Bindings>

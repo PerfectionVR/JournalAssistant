@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "Dev tooling for the addon tests (Lua syntax check)",
+  "devDependencies": {
+    "luaparse": "0.3.1"
+  }
+}
