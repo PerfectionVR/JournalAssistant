@@ -97,7 +97,7 @@ local function CreateNextBox(parent)
     b.mark = btn("Mark", 40, function() ns.Routes:MarkCurrent(ns.Planner.active) end,
         "Save your current position as this task's destination (verified location).")
     b.arrow = btn("Arrow", 60, function() ns.Navigation:ToggleArrow() end,
-        "Quick toggle: the TomTom arrow (or the map pin if TomTom is missing) follows the active task.\n/fpa arrow, or bind a key under Keybindings > AddOns.")
+        "Quick toggle: the TomTom arrow (or the map pin if TomTom is missing) follows the active task.\n/ja arrow, or bind a key under Keybindings > AddOns.")
     b:SetScript("OnEnter", function(self) UI.TaskTooltip(self, ns.Planner.active) end)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     return b
@@ -130,7 +130,7 @@ function UI:Create()
     bar:SetScript("OnDragStop", function() frame:StopMovingOrSizing(); SavePosition() end)
     local title = T.Text(bar, 12, C.gold)
     title:SetPoint("LEFT", 10, 0)
-    title:SetText("Profession Assistant")
+    title:SetText("Journal Assistant")
     frame.subtitle = T.Text(bar, 9, C.dim)
     frame.subtitle:SetPoint("LEFT", title, "RIGHT", 8, -1)
     local line = T.Divider(frame)

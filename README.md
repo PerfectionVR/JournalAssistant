@@ -72,7 +72,7 @@ task, drag to move). **Compact** mode shows only the Next objective box.
 | `/ja compact`, `tracker`, `minimap`, `config`, `reset` | Compact view, tracker, minimap button, settings, reset window position |
 | `/ja debug` | Diagnostics window (Ctrl+A, Ctrl+C to copy) |
 
-`/journal` works the same as `/ja`, and so does the old `/fpa`.
+`/journal` works the same as `/ja`.
 
 ## Professions
 
@@ -319,7 +319,7 @@ Git flow, as in RPSheet:
 ### Renamed from Forever Profession Assistant
 
 Until 0.1.0 the addon was called *Forever Profession Assistant* (`/fpa`, saved variables `FPA_DB` /
-`FPA_CharDB`). `/fpa` still works. The game keeps saved variables per addon folder, so old settings do not
+`FPA_CharDB`). The game keeps saved variables per addon folder, so old settings do not
 carry over by themselves: copy `WTF\Account\<account>\SavedVariables\ForeverProfessionAssistant.lua` to
 `JournalAssistant.lua` (and the same under each character's `SavedVariables` folder), replacing `FPA_DB`
 with `JA_DB` and `FPA_CharDB` with `JA_CharDB`, while the game is closed.

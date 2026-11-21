@@ -13,4 +13,4 @@ First public release, renamed from Forever Profession Assistant to Journal Assis
 - Library books and camping as their own tabs; skipped chains go back under Later and
   finished ones under Completed.
 - Waypoints through TomTom or map pins, a tracker, a minimap button and key bindings.
-- Commands are now `/ja` (also `/journal`; the old `/fpa` still works).
+- Commands are now `/ja` (also `/journal`).
