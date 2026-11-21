@@ -71,7 +71,8 @@ function GP:AddChainGroup(ctx, chains, group, label, prioKey)
                 blocked = ("Finish \"%s\" first"):format(prev.title)
             elseif cur and not st.inLog and CQ:MissingPrereq(cur) then
                 -- the quest giver only offers it after another quest (Wowhead "Requires")
-                blocked = ("Finish \"%s\" first"):format(CQ:MissingPrereq(cur).name)
+                local mp = CQ:MissingPrereq(cur)
+                blocked = (mp.accept and "Accept \"%s\" first" or "Finish \"%s\" first"):format(mp.name)
             elseif safety == "danger" and not ns.db.allowDangerous and not st.inLog then
                 -- a quest you already have is never hidden for level: its objectives
                 -- show a caution instead (one named mob above your level, e.g. Gutspill)

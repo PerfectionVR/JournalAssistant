@@ -374,6 +374,7 @@ ns.UI:Show(); ns.UI:SelectTab("CLASS"); ns.UI:Refresh(); ns.UI:SelectTab("PROF")
 print("END16")
 print("\n==== generic quest info: kill objective from the quest log (The Affray) ====")
 UnitLevel = function() return 30 end; C_Map.GetBestMapForUnit = function() return 1413 end
+REAL_QI = { [1718] = ns.Data.questInfo[1718], [1719] = ns.Data.questInfo[1719] } -- restored in END22
 ns.Data.questInfo[1718] = { start = { npc = "Baltus Fowler", zone = "Undercity", x = 47.2, y = 17 }, finish = { npc = "Klannoc Macleod", zone = "The Barrens", x = 68.6, y = 49 } }
 ns.Data.questInfo[1719] = { start = { npc = "Klannoc Macleod", zone = "The Barrens", x = 68.6, y = 49 }, finish = { npc = "Klannoc Macleod", zone = "The Barrens", x = 68.6, y = 49 },
   obj = { { kill = 6238, name = "Big Will", qty = 1, zone = "The Barrens", x = 68.6, y = 48.6, areaMin = 30 }, { item = 3901, name = "Bloodscalp Tusk", qty = 3, area = 33, x = 30, y = 20 } } }
@@ -490,3 +491,31 @@ COUNTS[17062] = 1; ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); trout("r
 COUNTS[17062] = 0; KNOWN[20916] = true; ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); trout("learned (window not opened)")
 KNOWN[20916] = nil
 print("END21")
+
+print("\n==== warrior follow-ups after the stance spell + Whirlwind chain (Human, level 30) ====")
+UnitLevel = function() return 30 end; C_Map.GetBestMapForUnit = function() return 1453 end
+C_QuestLog.GetInfo = function(i) return { title = "Something else", questID = 1 } end
+C_QuestLog.GetQuestObjectives = function() return {} end
+ns.char.questDone = {}; ns.char.tracked = {}
+for _, id in ipairs({ 1638, 1639, 1640, 1665 }) do DONEQ[id] = true end
+DONEQ[1718] = nil; DONEQ[1719] = nil -- set by END17
+for id, v in pairs(REAL_QI) do ns.Data.questInfo[id] = v end
+KNOWN[71] = true; KNOWN[2458] = nil
+local function row22(id)
+  local g = ns.Planner.groups.CLASS
+  for _, k in ipairs({ "active", "blocked", "done" }) do for _, t in ipairs(g[k]) do if t.id == id then
+    return k .. " | " .. t.title .. " | npc " .. tostring(t.npc) .. " | " .. tostring(t.zone) .. (t.blocked and (" -- " .. t.blocked) or "") end end end
+  return "not listed"
+end
+ns:Refresh(); RunTimers()
+print("defensive stance known, 1665 done: " .. row22("class:war10human"))
+print("islander not started: " .. row22("class:war30berserk"))
+DONEQ[1718] = true; DONEQ[1719] = true; DONEQ[1791] = true; KNOWN[2458] = true
+ns:Refresh(); RunTimers()
+print("berserker known, windwatcher done: " .. row22("class:war30berserk"))
+C_QuestLog.GetInfo = function(i) return { title = "Cyclonian", questID = 1712 } end
+ns:Refresh(); RunTimers()
+print("cyclonian accepted: " .. row22("class:war30berserk"))
+for _, id in ipairs({ 1666, 1667, 1714, 1712, 1713, 1718, 1719, 1791 }) do DONEQ[id] = nil end
+KNOWN[71] = nil; KNOWN[2458] = nil
+print("END22")

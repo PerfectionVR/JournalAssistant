@@ -45,10 +45,18 @@ end
 
 -- First prerequisite quest of a step that is not done yet (Wowhead "Requires",
 -- D.questInfo[id].requires = { { id, name }, ... }; requiresOneOf = any one).
--- Returns { id, name } or nil.
+-- requiresActive = Wowhead "Requires In Progress": that quest must be in your
+-- log (e.g. Essence of the Exile opens when you accept Cyclonian).
+-- Returns { id, name, accept = true when it only has to be accepted } or nil.
 function QC:MissingPrereq(step)
     local info = self:Info(step)
     if not info then return nil end
+    for _, rq in ipairs(info.requiresActive or {}) do
+        local s = { id = rq[1], name = rq[2] }
+        if not self:StepInLog(s) and not self:StepDone(s) then
+            return { id = rq[1], name = rq[2] or ("quest " .. rq[1]), accept = true }
+        end
+    end
     for _, rq in ipairs(info.requires or {}) do
         if not self:StepDone({ id = rq[1], name = rq[2] }) then return { id = rq[1], name = rq[2] or ("quest " .. rq[1]) } end
     end
@@ -219,6 +227,13 @@ end
 -- where to pick a step up / turn it in (falls back to the chain start)
 function QC:StepStart(chain, step)
     local info = self:Info(step)
+    -- several quest givers (e.g. one per capital): the first one of your faction
+    if info and info.starts then
+        local f = ns.PlayerFaction()
+        for _, s in ipairs(info.starts) do
+            if not s.faction or s.faction == f then return s end
+        end
+    end
     return (info and info.start) or (step == chain.steps[1] and chain.start) or nil
 end
 
