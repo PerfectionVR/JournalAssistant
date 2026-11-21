@@ -10,6 +10,8 @@ First public release, renamed from Forever Profession Assistant to Journal Assis
 - Class quests for every class, as steps in the plan when switched on. Quests check
   your race and the quests they need first (from Wowhead Forever), so locked follow-ups
   show "Finish ... first" and quests for other races are hidden.
+  Objectives of a quest you already have are never hidden for level: a higher-level
+  target (like Gutspill for the Burning Rock) shows a caution instead.
 - Library books and camping as their own tabs; skipped chains go back under Later and
   finished ones under Completed.
 - Waypoints through TomTom or map pins, a tracker, a minimap button and key bindings.

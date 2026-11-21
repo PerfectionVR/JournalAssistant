@@ -72,8 +72,22 @@ function GP:AddChainGroup(ctx, chains, group, label, prioKey)
             elseif cur and not st.inLog and CQ:MissingPrereq(cur) then
                 -- the quest giver only offers it after another quest (Wowhead "Requires")
                 blocked = ("Finish \"%s\" first"):format(CQ:MissingPrereq(cur).name)
-            elseif safety == "danger" and not ns.db.allowDangerous then
+            elseif safety == "danger" and not ns.db.allowDangerous and not st.inLog then
+                -- a quest you already have is never hidden for level: its objectives
+                -- show a caution instead (one named mob above your level, e.g. Gutspill)
                 blocked = ("Reach level %d first (you are %d)"):format(effMin or c.level, ctx.level)
+            end
+            -- caution for one objective: name the mob / item and its level when known
+            local function ObjCaution(o)
+                local oc, os, omin = CautionText(o.zone, ctx.level, o.areaMin, o.dungeon)
+                if os == "danger" and st.inLog and o.areaMin and not o.dungeon then
+                    -- "from" already carries the level, e.g. "Gutspill (32)"
+                    local who = (o.from and o.from:find("%(")) and o.from
+                        or ("%s (%d)"):format(o.from or o.name or "The target", o.areaMin)
+                    oc = ("%s - you are level %d; bring help if needed."):format(who, ctx.level)
+                    os = "caution"
+                end
+                return oc, os, omin
             end
             local function ObjText(e)
                 return ("%s %d/%d"):format(e.o.kill and ("Kill " .. (e.o.name or "?")) or (e.o.name or "?"), e.have, e.need)
@@ -121,7 +135,7 @@ function GP:AddChainGroup(ctx, chains, group, label, prioKey)
                 if started and remaining then
                     for _, e in ipairs(remaining) do
                         local o = e.o
-                        local oc, os, omin = CautionText(o.zone, ctx.level, o.areaMin, o.dungeon)
+                        local oc, os, omin = ObjCaution(o)
                         local ob = blocked or (os == "danger" and not ns.db.allowDangerous
                             and ("Reach level %d first (you are %d)"):format(omin or o.areaMin or c.level, ctx.level)) or nil
                         AddTask(ctx, {

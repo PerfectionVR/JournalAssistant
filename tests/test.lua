@@ -444,3 +444,27 @@ for _, id in ipairs({ "class:war28mail", "class:war28coif", "class:war28mathiel"
 DONEQ[1701] = true; ns:Refresh(); RunTimers()
 for _, id in ipairs({ "class:war28coif", "class:war28mathiel", "class:war28klock" }) do print("  after 1701:  " .. id .. " -> " .. where18(id)) end
 print("END19")
+
+print("\n==== Burning Blood: 20 vials + 1 Burning Rock (Human warrior, level 29) ====")
+UnitLevel = function() return 29 end; C_Map.GetBestMapForUnit = function() return 1431 end
+DONEQ[1701] = true; DONEQ[1700] = true
+ns.char.questDone = {}; ns.char.tracked = { ["class:war28coif"] = true }
+local bbLog = { { text = "Burning Blood: 0/20", finished = false, numFulfilled = 0, numRequired = 20 },
+                { text = "Burning Rock: 0/1", finished = false, numFulfilled = 0, numRequired = 1 } }
+C_QuestLog.GetInfo = function(i) return { title = "Burning Blood", questID = 1705 } end
+C_QuestLog.GetQuestObjectives = function(id) if id == 1705 then return bbLog end return {} end
+local function pbb(lbl)
+  print("-- " .. lbl)
+  for _, t in ipairs(ns.Planner.ordered) do if t.id:find("^class:war28coif") then print("   PLAN " .. t.title .. (t.caution and (" | caution: " .. t.caution) or "")) end end
+  for _, t in ipairs(ns.Planner.blocked) do if t.id:find("^class:war28coif") then print("   LATER " .. t.title .. " -- " .. t.blocked) end end
+  local g = ns.Planner.groups.CLASS
+  for _, k in ipairs({ "active", "blocked", "done" }) do for _, t in ipairs(g[k]) do if t.id == "class:war28coif" then print("   list: " .. k) end end end
+end
+COUNTS[6844] = 5; bbLog[1].numFulfilled = 5; bbLog[1].text = "Burning Blood: 5/20"
+ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); pbb("5/20 blood, no rock")
+COUNTS[6844] = 20; bbLog[1].numFulfilled = 20; bbLog[1].finished = true; bbLog[1].text = "Burning Blood: 20/20"
+ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); pbb("20/20 blood, no rock")
+print("-- quest log only lists the first objective")
+C_QuestLog.GetQuestObjectives = function(id) if id == 1705 then return { bbLog[1] } end return {} end
+ns:Refresh(); RunTimers(); pbb("20/20 blood, log has 1 objective")
+print("END20")
