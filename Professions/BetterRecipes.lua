@@ -130,7 +130,13 @@ function PP:AddBetterRecipes(ctx, p, cache, goalCap, best)
         local itemName = (recipeItem and recipeItem.name) or (v and v.item)
         local inBags = itemName and ns.Inventory:Count({ itemID = recipeItem and recipeItem.item, name = itemName }) or 0
         if inBags > 0 then
-            local need = (whIn and whIn.req) or c.from
+            -- the skill needed to USE the recipe item: the highest one any source
+            -- gives. Wowhead's spell "req" can be lower than the item's (Manual:
+            -- Mageweave Bandage: spell 150, item "Requires First Aid (210)").
+            local need
+            for _, r in ipairs({ whIn and whIn.req or 0, c.from or 0, v and v.skill or 0 }) do
+                if r > 0 and (not need or r > need) then need = r end
+            end
             local early = need and p.skill < need
             AddTask(ctx, {
                 id = ("learn:%s:%s"):format(p.key, c.name), kind = "obtain", prof = p.key,

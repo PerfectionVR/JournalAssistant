@@ -563,3 +563,27 @@ for _, id in ipairs({ 1645, 1646, 1647, 1648, 1778, 1779 }) do DONEQ[id] = nil e
 C_QuestLog.GetInfo = function(i) return { title = "Something else", questID = 1 } end
 UnitRace = function() return "Human", "Human", 1 end
 print("END23")
+
+print("\n==== Manual: Mageweave Bandage in bags at First Aid 203 (item needs 210) ====")
+UnitLevel = function() return 35 end
+local faSkill = 203
+local realFA = C_TradeSkillUI.GetProfessionInfoBySkillLineID
+C_TradeSkillUI.GetProfessionInfoBySkillLineID = function(id)
+  if id == 129 then return { skillLevel = faSkill, maxSkillLevel = 225, professionName = "First Aid" } end
+  return realFA(id)
+end
+ITEMS[16113] = "Manual: Mageweave Bandage"; COUNTS[16113] = 1
+local function mw(lbl)
+  local n = 0
+  for _, list in ipairs({ ns.Planner.ordered, ns.Planner.blocked }) do
+    for _, t in ipairs(list) do
+      if t.id:find("^learn:FIRSTAID:Mageweave Bandage") then n = n + 1
+        print(("%s: %s%s"):format(lbl, t.title, t.blocked and (" -- " .. t.blocked) or " -- active")) end
+    end
+  end
+  if n == 0 then print(lbl .. ": no task") end
+end
+ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); mw("skill 203")
+faSkill = 210; ns:Refresh(); RunTimers(); mw("skill 210")
+COUNTS[16113] = 0; C_TradeSkillUI.GetProfessionInfoBySkillLineID = realFA; ns.Inventory:MarkDirty()
+print("END24")
