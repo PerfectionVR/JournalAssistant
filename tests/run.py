@@ -12,7 +12,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-EXPECTED = 19  # scenarios END2 .. END20
+EXPECTED = 20  # scenarios END2 .. END21
 
 try:
     import lupa.lua51 as L

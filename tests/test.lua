@@ -468,3 +468,25 @@ print("-- quest log only lists the first objective")
 C_QuestLog.GetQuestObjectives = function(id) if id == 1705 then return { bbLog[1] } end return {} end
 ns:Refresh(); RunTimers(); pbb("20/20 blood, log has 1 objective")
 print("END20")
+
+print("\n==== Mithril Head Trout: buy, use from bags, learned (Cooking 180) ====")
+UnitLevel = function() return 29 end; C_Map.GetBestMapForUnit = function() return 1453 end
+ITEMS[17062] = "Recipe: Mithril Head Trout"; COUNTS[17062] = 0
+ns.char.recipes.COOKING = { key = "COOKING", scannedSkill = 180, scannedMax = 225, list = {
+  [3397] = { name = "Curiously Tasty Omelet", learned = true, diff = "trivial", reagents = {} } } }
+PROFSKILL = 180
+local function trout(lbl)
+  print("-- " .. lbl)
+  local n = 0
+  for _, list in ipairs({ ns.Planner.ordered, ns.Planner.blocked }) do
+    for _, t in ipairs(list) do
+      if t.id:find("^learn:COOKING:Mithril") then n = n + 1; print("   " .. t.title .. (t.blocked and (" -- " .. t.blocked) or "")) end
+    end
+  end
+  print("   trout tasks: " .. n)
+end
+ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); trout("not bought")
+COUNTS[17062] = 1; ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); trout("recipe in bags")
+COUNTS[17062] = 0; KNOWN[20916] = true; ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); trout("learned (window not opened)")
+KNOWN[20916] = nil
+print("END21")

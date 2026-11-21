@@ -7,6 +7,8 @@ First public release, renamed from Forever Profession Assistant to Journal Assis
 - Professions: skill-up plan per profession (training ranks, crafting with the guide's
   recipes, gathering, skinning, fishing, buying or farming materials), each switched
   On/Off under its icon, with targets and price estimates.
+  A recipe you bought says to use it from your bags, and a learned recipe drops out
+  of the plan straight away (checked by spell, also when the guide names it differently).
 - Class quests for every class, as steps in the plan when switched on. Quests check
   your race and the quests they need first (from Wowhead Forever), so locked follow-ups
   show "Finish ... first" and quests for other races are hidden.

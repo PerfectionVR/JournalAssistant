@@ -9,7 +9,36 @@ local PP = ns.ProfPlan
 local U = PL.util
 local AddTask, prio, now, SafetyFactor, CautionText, Hub = U.AddTask, U.prio, U.now, U.SafetyFactor, U.CautionText, U.Hub
 
+-- Wowhead teacher data for a recipe, by its name or its recipe item's name
+-- ("Mithril Head Trout" is taught by the spell "Mithril Headed Trout").
+local function TeacherFor(name)
+    local T = ns.Data.recipeTeachers
+    if not T then return nil end
+    local lname = string.lower(name)
+    if T[lname] then return T[lname] end
+    local itemName = "recipe: " .. lname
+    for _, wh in pairs(T) do
+        for _, it in ipairs(wh.items or {}) do
+            if it.name and string.lower(it.name) == itemName then return wh end
+        end
+    end
+end
+
+local function SpellKnown(id)
+    if not id or type(IsPlayerSpell) ~= "function" then return false end
+    local ok, v = pcall(IsPlayerSpell, id)
+    return ok and v and true or false
+end
+
+-- Learned: by spell ID (works without opening the profession window, and for
+-- recipes whose name differs from the guide's) or by name in the last scan.
 local function KnownRecipe(cache, name)
+    local wh = TeacherFor(name)
+    if wh and wh.spell then
+        if SpellKnown(wh.spell) then return true end
+        local r = cache.list[wh.spell]
+        if r and r.learned then return true end
+    end
     local lname = string.lower(name)
     for _, r in pairs(cache.list) do
         if r.learned and r.name and string.lower(r.name) == lname then return true end
@@ -67,7 +96,9 @@ end
 function PP:AddBetterRecipes(ctx, p, cache, goalCap, best)
     local seen, cands = {}, {}
     local function add(c)
-        local k = string.lower(c.name)
+        -- one entry per recipe, even when guides spell its name two ways
+        local wh = TeacherFor(c.name)
+        local k = wh and wh.spell or string.lower(c.name)
         if seen[k] or KnownRecipe(cache, c.name) then return end
         seen[k] = true
         cands[#cands + 1] = c
@@ -93,10 +124,26 @@ function PP:AddBetterRecipes(ctx, p, cache, goalCap, best)
         -- Your client lists unlearned recipes too: a guide recipe missing from that
         -- list most likely does not exist on Forever, so it is not suggested.
         local missing = not v and not scanned and (unlearnedCount or 0) > 0
-        if not missing then
+        -- bought (or looted) but not used yet: learn it from your bags
+        local whIn = TeacherFor(c.name)
+        local recipeItem = whIn and whIn.items and whIn.items[1]
+        local itemName = (recipeItem and recipeItem.name) or (v and v.item)
+        local inBags = itemName and ns.Inventory:Count({ itemID = recipeItem and recipeItem.item, name = itemName }) or 0
+        if inBags > 0 then
+            local need = (whIn and whIn.req) or c.from
+            local early = need and p.skill < need
+            AddTask(ctx, {
+                id = ("learn:%s:%s"):format(p.key, c.name), kind = "obtain", prof = p.key,
+                title = ("Learn %s: use %s from your bags"):format(c.name, itemName),
+                detail = ("You have %s. Right-click it in your bags to learn the recipe."):format(itemName),
+                blocked = early and ("Usable at %s %d (you have %d)"):format(p.name, need, p.skill) or nil,
+                confidence = "client", value = 6 * prio(p.key),
+                reasons = { "recipe in your bags" },
+            })
+        elseif not missing then
             local teacher, notHere = nil, {}
             if ns.Trainers then teacher, notHere = ns.Trainers:WhoTeaches(p.key, c.name) end
-            local wh = ns.Data.recipeTeachers and ns.Data.recipeTeachers[string.lower(c.name)]
+            local wh = TeacherFor(c.name)
             if wh and wh.req and not teacher then c.from = wh.req end
             local clientText = scanned and scanned.source and scanned.source ~= "" and scanned.source or nil
             -- Wowhead-verified recipe item: nearest safe vendor of your faction, else its drop sources
