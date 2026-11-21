@@ -519,3 +519,47 @@ print("cyclonian accepted: " .. row22("class:war30berserk"))
 for _, id in ipairs({ 1666, 1667, 1714, 1712, 1713, 1718, 1719, 1791 }) do DONEQ[id] = nil end
 KNOWN[71] = nil; KNOWN[2458] = nil
 print("END22")
+
+print("\n==== warlock / shaman / paladin chains per race (Wowhead Forever series) ====")
+local QC = ns.QuestChains
+C_QuestLog.GetInfo = function(i) return { title = "Something else", questID = 1 } end
+ns.char.questDone = {}; ns.char.tracked = {}
+local function chains23(class, race, raceID, faction, level)
+  UnitClass = function() return class, class end
+  UnitRace = function() return race, race, raceID end
+  UnitFactionGroup = function() return faction end
+  local out = {}
+  for _, c in ipairs(QC:ChainsFrom(ns.Data.classQuests[class])) do
+    if c.level <= level then
+      local st = QC:State(c)
+      local s = st.current and QC:StepStart(c, st.current)
+      out[#out + 1] = ("%s(%d steps, %s)"):format(c.key, #c.steps, s and s.npc or "?")
+    end
+  end
+  print(("%-8s %-8s L%-2d %s"):format(class, race, level, table.concat(out, " ")))
+end
+chains23("WARLOCK", "Orc", 2, "Horde", 40)
+chains23("WARLOCK", "Scourge", 5, "Horde", 30)
+chains23("WARLOCK", "Gnome", 7, "Alliance", 30)
+chains23("WARLOCK", "Human", 1, "Alliance", 60)
+chains23("SHAMAN", "Tauren", 6, "Horde", 30)
+chains23("SHAMAN", "Troll", 8, "Horde", 52)
+chains23("SHAMAN", "Dwarf", 3, "Alliance", 30)
+chains23("PALADIN", "Dwarf", 3, "Alliance", 60)
+chains23("PALADIN", "Scourge", 5, "Horde", 40)
+chains23("PALADIN", "Tauren", 6, "Horde", 40)
+-- Symbol of Life: only offered while the Tome of Divinity that needs it is in your log
+UnitClass = function() return "Paladin", "PALADIN" end
+UnitRace = function() return "Dwarf", "Dwarf", 3 end
+UnitFactionGroup = function() return "Alliance" end
+UnitLevel = function() return 13 end
+for _, id in ipairs({ 1645, 1646, 1647, 1648, 1778, 1779 }) do DONEQ[id] = true end
+ns:Refresh(); RunTimers()
+print("tome of divinity, 1779 done: " .. row22("class:pal12d"))
+C_QuestLog.GetInfo = function(i) return { title = "The Tome of Divinity", questID = 1783 } end
+ns:Refresh(); RunTimers()
+print("1783 accepted: " .. row22("class:pal12d"))
+for _, id in ipairs({ 1645, 1646, 1647, 1648, 1778, 1779 }) do DONEQ[id] = nil end
+C_QuestLog.GetInfo = function(i) return { title = "Something else", questID = 1 } end
+UnitRace = function() return "Human", "Human", 1 end
+print("END23")

@@ -141,9 +141,12 @@ function QC:StepDone(step)
     return false
 end
 
+-- By quest ID when the log reports IDs: many chains repeat one title
+-- ("The Tome of Divinity", "Call of Water"), so a title match would mark every
+-- step of that name as in the log. Titles only for steps without an ID.
 function QC:StepInLog(step)
     local log = self:QuestLog()
-    if step.id and log.ids[step.id] then return true end
+    if step.id and next(log.ids) then return log.ids[step.id] or false end
     return step.name and log.titles[lower(step.name)] or false
 end
 
@@ -227,11 +230,15 @@ end
 -- where to pick a step up / turn it in (falls back to the chain start)
 function QC:StepStart(chain, step)
     local info = self:Info(step)
-    -- several quest givers (e.g. one per capital): the first one of your faction
+    -- several quest givers (e.g. one per capital): the first one of your
+    -- faction (and race, when the entry lists race IDs)
     if info and info.starts then
         local f = ns.PlayerFaction()
+        local _, _, raceID = UnitRace("player")
         for _, s in ipairs(info.starts) do
-            if not s.faction or s.faction == f then return s end
+            local raceOK = not (s.races and raceID)
+            for _, r in ipairs((not raceOK and s.races) or {}) do if r == raceID then raceOK = true end end
+            if (not s.faction or s.faction == f) and raceOK then return s end
         end
     end
     return (info and info.start) or (step == chain.steps[1] and chain.start) or nil
