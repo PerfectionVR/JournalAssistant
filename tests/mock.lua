@@ -3,7 +3,10 @@ local frames = {}
 local timers = {}
 unpack = unpack or table.unpack
 function wipe(t) for k in pairs(t) do t[k] = nil end return t end
-function GetTime() return os.clock() end
+-- a frame clock that moves on every call: os.clock() ticks too coarsely, so two
+-- builds in a row could look like the same frame and reuse per-frame caches
+local clock = 0
+function GetTime() clock = clock + 0.001; return clock end
 time = os.time
 STANDARD_TEXT_FONT = "Fonts\\FRIZQT__.TTF"
 BackdropTemplateMixin = {}
