@@ -29,6 +29,12 @@ end
 
 -- Race restriction of a quest (Wowhead "Race" fact, D.questInfo[id].races = race IDs)
 function QC:StepRaceOK(step)
+    -- a step with alternative quests is fine when any of them suits your race
+    if step and step.alt then
+        if self:StepRaceOK({ id = step.id }) then return true end
+        for _, id in ipairs(step.alt) do if self:StepRaceOK({ id = id }) then return true end end
+        return false
+    end
     local info = self:Info(step)
     if not (info and info.races and #info.races > 0) then return true end
     local _, _, raceID = UnitRace("player")
@@ -126,6 +132,13 @@ function QC:QuestLog()
 end
 
 function QC:StepDone(step)
+    -- step.alt: other quest IDs that do the same job (a lead-in offered by two
+    -- quest givers, e.g. The Hunter's Path); any one of them counts
+    if step.alt then
+        for _, id in ipairs(step.alt) do
+            if self:StepDone({ id = id }) then return true end
+        end
+    end
     local done = ns.char.questDone
     -- still in your quest log = not turned in, whatever was recorded before
     -- (clears a stale "turned in" flag, e.g. from a misfired event)
@@ -146,6 +159,7 @@ end
 -- step of that name as in the log. Titles only for steps without an ID.
 function QC:StepInLog(step)
     local log = self:QuestLog()
+    for _, id in ipairs(step.alt or {}) do if log.ids[id] then return true end end
     if step.id and next(log.ids) then return log.ids[step.id] or false end
     return step.name and log.titles[lower(step.name)] or false
 end
@@ -229,6 +243,13 @@ end
 
 -- where to pick a step up / turn it in (falls back to the chain start)
 function QC:StepStart(chain, step)
+    -- alternative quests: the quest giver of the first one your race can take
+    if step and step.alt then
+        for _, id in ipairs({ step.id, unpack(step.alt) }) do
+            local s = { id = id }
+            if self:StepRaceOK(s) and self:Info(s) then return self:StepStart(chain, s) end
+        end
+    end
     local info = self:Info(step)
     -- several quest givers (e.g. one per capital): the first one of your
     -- faction (and race, when the entry lists race IDs)

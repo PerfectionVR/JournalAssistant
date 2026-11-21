@@ -548,6 +548,16 @@ chains23("SHAMAN", "Dwarf", 3, "Alliance", 30)
 chains23("PALADIN", "Dwarf", 3, "Alliance", 60)
 chains23("PALADIN", "Scourge", 5, "Horde", 40)
 chains23("PALADIN", "Tauren", 6, "Horde", 40)
+chains23("DRUID", "NightElf", 4, "Alliance", 20)
+chains23("DRUID", "Tauren", 6, "Horde", 20)
+chains23("HUNTER", "Troll", 8, "Horde", 10)
+chains23("MAGE", "Troll", 8, "Horde", 40)
+chains23("ROGUE", "Orc", 2, "Horde", 20)
+chains23("ROGUE", "Human", 1, "Alliance", 20)
+-- alt: The Hunter's Path from Kali Remik (6069) instead of Sian'dur (6068)
+DONEQ[6069] = true
+chains23("HUNTER", "Troll", 8, "Horde", 10)
+DONEQ[6069] = nil
 -- Symbol of Life: only offered while the Tome of Divinity that needs it is in your log
 UnitClass = function() return "Paladin", "PALADIN" end
 UnitRace = function() return "Dwarf", "Dwarf", 3 end
