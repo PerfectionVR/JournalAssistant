@@ -1,5 +1,7 @@
 # Journal Assistant (JA)
 
+> **No longer maintained.** 0.2.0 is the final release; use the Polestar addon instead.
+
 A progression planner for **World of Warcraft: Forever**: professions, class quests, library books
 and camping in one dashboard, with an optional waypoint arrow. It needs no other addons; it uses
 **TomTom** (arrow) and **Auctionator** (price estimates) when they are installed.

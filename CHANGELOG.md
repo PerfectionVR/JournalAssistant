@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.0 - final release
+
+Journal Assistant is no longer maintained: the Polestar addon covers the same ground.
+This last release collects the remaining work.
+
+- Class quests: every lead-in and follow-up from Wowhead Forever's quest series for
+  Warrior, Warlock, Shaman, Paladin, Druid, Hunter, Mage and Rogue, per race where the
+  races start in different places (for example Cyclonian's lead-in for Warriors, the
+  full Dreadsteed and Charger chains, Bear Form, The Hunter's Path, Mage's Wand and
+  The Touch of Zanzil). Quests that open while another one is in your log say
+  "Accept ... first", and a lead-in offered by two quest givers counts either way.
+- A quest only counts as in your log by its own quest ID, so chains that repeat a title
+  (The Tome of Divinity, Call of Water) no longer lose their progress.
+- Recipes in your bags wait for the skill the recipe item needs (Manual: Mageweave
+  Bandage asked for First Aid 150 instead of 210), and for the character level the
+  recipe item itself needs. The level of what it makes does not hold it back.
+
 ## 0.1.0
 
 First public release, renamed from Forever Profession Assistant to Journal Assistant.
