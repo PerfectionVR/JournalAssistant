@@ -595,5 +595,13 @@ local function mw(lbl)
 end
 ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); mw("skill 203")
 faSkill = 210; ns:Refresh(); RunTimers(); mw("skill 210")
+-- only the recipe item's own level counts (GetItemInfo minLevel), not the
+-- "Requires Level" of what it makes that its tooltip also shows
+local MINLVL = { [16113] = 0 }
+GetItemInfo = function(id) if MINLVL[id] then return ITEMS[id], nil, 1, 0, MINLVL[id] end end
+ns.db.itemIDs["manual: mageweave bandage"] = 16113
+ns:Refresh(); RunTimers(); mw("recipe item needs no level (level 35)")
+MINLVL[16113] = 40; ns:Refresh(); RunTimers(); mw("recipe item needs level 40 (level 35)")
+GetItemInfo = nil
 COUNTS[16113] = 0; C_TradeSkillUI.GetProfessionInfoBySkillLineID = realFA; ns.Inventory:MarkDirty()
 print("END24")
