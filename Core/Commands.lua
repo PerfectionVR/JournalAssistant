@@ -19,7 +19,6 @@ end
 
 SLASH_JOURNALASSIST1 = "/ja"
 SLASH_JOURNALASSIST2 = "/journal"
-SLASH_JOURNALASSIST3 = "/fpa" -- old name, kept so muscle memory still works
 SlashCmdList["JOURNALASSIST"] = function(msg)
     if not ns.ready then ns.Print("Not ready yet.") return end
     local cmd, rest = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")

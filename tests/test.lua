@@ -374,6 +374,7 @@ ns.UI:Show(); ns.UI:SelectTab("CLASS"); ns.UI:Refresh(); ns.UI:SelectTab("PROF")
 print("END16")
 print("\n==== generic quest info: kill objective from the quest log (The Affray) ====")
 UnitLevel = function() return 30 end; C_Map.GetBestMapForUnit = function() return 1413 end
+REAL_QI = { [1718] = ns.Data.questInfo[1718], [1719] = ns.Data.questInfo[1719] } -- restored in END22
 ns.Data.questInfo[1718] = { start = { npc = "Baltus Fowler", zone = "Undercity", x = 47.2, y = 17 }, finish = { npc = "Klannoc Macleod", zone = "The Barrens", x = 68.6, y = 49 } }
 ns.Data.questInfo[1719] = { start = { npc = "Klannoc Macleod", zone = "The Barrens", x = 68.6, y = 49 }, finish = { npc = "Klannoc Macleod", zone = "The Barrens", x = 68.6, y = 49 },
   obj = { { kill = 6238, name = "Big Will", qty = 1, zone = "The Barrens", x = 68.6, y = 48.6, areaMin = 30 }, { item = 3901, name = "Bloodscalp Tusk", qty = 3, area = 33, x = 30, y = 20 } } }
@@ -444,3 +445,163 @@ for _, id in ipairs({ "class:war28mail", "class:war28coif", "class:war28mathiel"
 DONEQ[1701] = true; ns:Refresh(); RunTimers()
 for _, id in ipairs({ "class:war28coif", "class:war28mathiel", "class:war28klock" }) do print("  after 1701:  " .. id .. " -> " .. where18(id)) end
 print("END19")
+
+print("\n==== Burning Blood: 20 vials + 1 Burning Rock (Human warrior, level 29) ====")
+UnitLevel = function() return 29 end; C_Map.GetBestMapForUnit = function() return 1431 end
+DONEQ[1701] = true; DONEQ[1700] = true
+ns.char.questDone = {}; ns.char.tracked = { ["class:war28coif"] = true }
+local bbLog = { { text = "Burning Blood: 0/20", finished = false, numFulfilled = 0, numRequired = 20 },
+                { text = "Burning Rock: 0/1", finished = false, numFulfilled = 0, numRequired = 1 } }
+C_QuestLog.GetInfo = function(i) return { title = "Burning Blood", questID = 1705 } end
+C_QuestLog.GetQuestObjectives = function(id) if id == 1705 then return bbLog end return {} end
+local function pbb(lbl)
+  print("-- " .. lbl)
+  for _, t in ipairs(ns.Planner.ordered) do if t.id:find("^class:war28coif") then print("   PLAN " .. t.title .. (t.caution and (" | caution: " .. t.caution) or "")) end end
+  for _, t in ipairs(ns.Planner.blocked) do if t.id:find("^class:war28coif") then print("   LATER " .. t.title .. " -- " .. t.blocked) end end
+  local g = ns.Planner.groups.CLASS
+  for _, k in ipairs({ "active", "blocked", "done" }) do for _, t in ipairs(g[k]) do if t.id == "class:war28coif" then print("   list: " .. k) end end end
+end
+COUNTS[6844] = 5; bbLog[1].numFulfilled = 5; bbLog[1].text = "Burning Blood: 5/20"
+ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); pbb("5/20 blood, no rock")
+COUNTS[6844] = 20; bbLog[1].numFulfilled = 20; bbLog[1].finished = true; bbLog[1].text = "Burning Blood: 20/20"
+ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); pbb("20/20 blood, no rock")
+print("-- quest log only lists the first objective")
+C_QuestLog.GetQuestObjectives = function(id) if id == 1705 then return { bbLog[1] } end return {} end
+ns:Refresh(); RunTimers(); pbb("20/20 blood, log has 1 objective")
+print("END20")
+
+print("\n==== Mithril Head Trout: buy, use from bags, learned (Cooking 180) ====")
+UnitLevel = function() return 29 end; C_Map.GetBestMapForUnit = function() return 1453 end
+ITEMS[17062] = "Recipe: Mithril Head Trout"; COUNTS[17062] = 0
+ns.char.recipes.COOKING = { key = "COOKING", scannedSkill = 180, scannedMax = 225, list = {
+  [3397] = { name = "Curiously Tasty Omelet", learned = true, diff = "trivial", reagents = {} } } }
+PROFSKILL = 180
+local function trout(lbl)
+  print("-- " .. lbl)
+  local n = 0
+  for _, list in ipairs({ ns.Planner.ordered, ns.Planner.blocked }) do
+    for _, t in ipairs(list) do
+      if t.id:find("^learn:COOKING:Mithril") then n = n + 1; print("   " .. t.title .. (t.blocked and (" -- " .. t.blocked) or "")) end
+    end
+  end
+  print("   trout tasks: " .. n)
+end
+ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); trout("not bought")
+COUNTS[17062] = 1; ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); trout("recipe in bags")
+COUNTS[17062] = 0; KNOWN[20916] = true; ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); trout("learned (window not opened)")
+KNOWN[20916] = nil
+print("END21")
+
+print("\n==== warrior follow-ups after the stance spell + Whirlwind chain (Human, level 30) ====")
+UnitLevel = function() return 30 end; C_Map.GetBestMapForUnit = function() return 1453 end
+C_QuestLog.GetInfo = function(i) return { title = "Something else", questID = 1 } end
+C_QuestLog.GetQuestObjectives = function() return {} end
+ns.char.questDone = {}; ns.char.tracked = {}
+for _, id in ipairs({ 1638, 1639, 1640, 1665 }) do DONEQ[id] = true end
+DONEQ[1718] = nil; DONEQ[1719] = nil -- set by END17
+for id, v in pairs(REAL_QI) do ns.Data.questInfo[id] = v end
+KNOWN[71] = true; KNOWN[2458] = nil
+local function row22(id)
+  local g = ns.Planner.groups.CLASS
+  for _, k in ipairs({ "active", "blocked", "done" }) do for _, t in ipairs(g[k]) do if t.id == id then
+    return k .. " | " .. t.title .. " | npc " .. tostring(t.npc) .. " | " .. tostring(t.zone) .. (t.blocked and (" -- " .. t.blocked) or "") end end end
+  return "not listed"
+end
+ns:Refresh(); RunTimers()
+print("defensive stance known, 1665 done: " .. row22("class:war10human"))
+print("islander not started: " .. row22("class:war30berserk"))
+DONEQ[1718] = true; DONEQ[1719] = true; DONEQ[1791] = true; KNOWN[2458] = true
+ns:Refresh(); RunTimers()
+print("berserker known, windwatcher done: " .. row22("class:war30berserk"))
+C_QuestLog.GetInfo = function(i) return { title = "Cyclonian", questID = 1712 } end
+ns:Refresh(); RunTimers()
+print("cyclonian accepted: " .. row22("class:war30berserk"))
+for _, id in ipairs({ 1666, 1667, 1714, 1712, 1713, 1718, 1719, 1791 }) do DONEQ[id] = nil end
+KNOWN[71] = nil; KNOWN[2458] = nil
+print("END22")
+
+print("\n==== warlock / shaman / paladin chains per race (Wowhead Forever series) ====")
+local QC = ns.QuestChains
+C_QuestLog.GetInfo = function(i) return { title = "Something else", questID = 1 } end
+ns.char.questDone = {}; ns.char.tracked = {}
+local function chains23(class, race, raceID, faction, level)
+  UnitClass = function() return class, class end
+  UnitRace = function() return race, race, raceID end
+  UnitFactionGroup = function() return faction end
+  local out = {}
+  for _, c in ipairs(QC:ChainsFrom(ns.Data.classQuests[class])) do
+    if c.level <= level then
+      local st = QC:State(c)
+      local s = st.current and QC:StepStart(c, st.current)
+      out[#out + 1] = ("%s(%d steps, %s)"):format(c.key, #c.steps, s and s.npc or "?")
+    end
+  end
+  print(("%-8s %-8s L%-2d %s"):format(class, race, level, table.concat(out, " ")))
+end
+chains23("WARLOCK", "Orc", 2, "Horde", 40)
+chains23("WARLOCK", "Scourge", 5, "Horde", 30)
+chains23("WARLOCK", "Gnome", 7, "Alliance", 30)
+chains23("WARLOCK", "Human", 1, "Alliance", 60)
+chains23("SHAMAN", "Tauren", 6, "Horde", 30)
+chains23("SHAMAN", "Troll", 8, "Horde", 52)
+chains23("SHAMAN", "Dwarf", 3, "Alliance", 30)
+chains23("PALADIN", "Dwarf", 3, "Alliance", 60)
+chains23("PALADIN", "Scourge", 5, "Horde", 40)
+chains23("PALADIN", "Tauren", 6, "Horde", 40)
+chains23("DRUID", "NightElf", 4, "Alliance", 20)
+chains23("DRUID", "Tauren", 6, "Horde", 20)
+chains23("HUNTER", "Troll", 8, "Horde", 10)
+chains23("MAGE", "Troll", 8, "Horde", 40)
+chains23("ROGUE", "Orc", 2, "Horde", 20)
+chains23("ROGUE", "Human", 1, "Alliance", 20)
+-- alt: The Hunter's Path from Kali Remik (6069) instead of Sian'dur (6068)
+DONEQ[6069] = true
+chains23("HUNTER", "Troll", 8, "Horde", 10)
+DONEQ[6069] = nil
+-- Symbol of Life: only offered while the Tome of Divinity that needs it is in your log
+UnitClass = function() return "Paladin", "PALADIN" end
+UnitRace = function() return "Dwarf", "Dwarf", 3 end
+UnitFactionGroup = function() return "Alliance" end
+UnitLevel = function() return 13 end
+for _, id in ipairs({ 1645, 1646, 1647, 1648, 1778, 1779 }) do DONEQ[id] = true end
+ns:Refresh(); RunTimers()
+print("tome of divinity, 1779 done: " .. row22("class:pal12d"))
+C_QuestLog.GetInfo = function(i) return { title = "The Tome of Divinity", questID = 1783 } end
+ns:Refresh(); RunTimers()
+print("1783 accepted: " .. row22("class:pal12d"))
+for _, id in ipairs({ 1645, 1646, 1647, 1648, 1778, 1779 }) do DONEQ[id] = nil end
+C_QuestLog.GetInfo = function(i) return { title = "Something else", questID = 1 } end
+UnitRace = function() return "Human", "Human", 1 end
+print("END23")
+
+print("\n==== Manual: Mageweave Bandage in bags at First Aid 203 (item needs 210) ====")
+UnitLevel = function() return 35 end
+local faSkill = 203
+local realFA = C_TradeSkillUI.GetProfessionInfoBySkillLineID
+C_TradeSkillUI.GetProfessionInfoBySkillLineID = function(id)
+  if id == 129 then return { skillLevel = faSkill, maxSkillLevel = 225, professionName = "First Aid" } end
+  return realFA(id)
+end
+ITEMS[16113] = "Manual: Mageweave Bandage"; COUNTS[16113] = 1
+local function mw(lbl)
+  local n = 0
+  for _, list in ipairs({ ns.Planner.ordered, ns.Planner.blocked }) do
+    for _, t in ipairs(list) do
+      if t.id:find("^learn:FIRSTAID:Mageweave Bandage") then n = n + 1
+        print(("%s: %s%s"):format(lbl, t.title, t.blocked and (" -- " .. t.blocked) or " -- active")) end
+    end
+  end
+  if n == 0 then print(lbl .. ": no task") end
+end
+ns.Inventory:MarkDirty(); ns:Refresh(); RunTimers(); mw("skill 203")
+faSkill = 210; ns:Refresh(); RunTimers(); mw("skill 210")
+-- only the recipe item's own level counts (GetItemInfo minLevel), not the
+-- "Requires Level" of what it makes that its tooltip also shows
+local MINLVL = { [16113] = 0 }
+GetItemInfo = function(id) if MINLVL[id] then return ITEMS[id], nil, 1, 0, MINLVL[id] end end
+ns.db.itemIDs["manual: mageweave bandage"] = 16113
+ns:Refresh(); RunTimers(); mw("recipe item needs no level (level 35)")
+MINLVL[16113] = 40; ns:Refresh(); RunTimers(); mw("recipe item needs level 40 (level 35)")
+GetItemInfo = nil
+COUNTS[16113] = 0; C_TradeSkillUI.GetProfessionInfoBySkillLineID = realFA; ns.Inventory:MarkDirty()
+print("END24")
