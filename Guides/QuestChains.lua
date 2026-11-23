@@ -29,6 +29,12 @@ end
 
 -- Race restriction of a quest (Wowhead "Race" fact, D.questInfo[id].races = race IDs)
 function QC:StepRaceOK(step)
+    -- a step with alternative quests is fine when any of them suits your race
+    if step and step.alt then
+        if self:StepRaceOK({ id = step.id }) then return true end
+        for _, id in ipairs(step.alt) do if self:StepRaceOK({ id = id }) then return true end end
+        return false
+    end
     local info = self:Info(step)
     if not (info and info.races and #info.races > 0) then return true end
     local _, _, raceID = UnitRace("player")
@@ -45,10 +51,18 @@ end
 
 -- First prerequisite quest of a step that is not done yet (Wowhead "Requires",
 -- D.questInfo[id].requires = { { id, name }, ... }; requiresOneOf = any one).
--- Returns { id, name } or nil.
+-- requiresActive = Wowhead "Requires In Progress": that quest must be in your
+-- log (e.g. Essence of the Exile opens when you accept Cyclonian).
+-- Returns { id, name, accept = true when it only has to be accepted } or nil.
 function QC:MissingPrereq(step)
     local info = self:Info(step)
     if not info then return nil end
+    for _, rq in ipairs(info.requiresActive or {}) do
+        local s = { id = rq[1], name = rq[2] }
+        if not self:StepInLog(s) and not self:StepDone(s) then
+            return { id = rq[1], name = rq[2] or ("quest " .. rq[1]), accept = true }
+        end
+    end
     for _, rq in ipairs(info.requires or {}) do
         if not self:StepDone({ id = rq[1], name = rq[2] }) then return { id = rq[1], name = rq[2] or ("quest " .. rq[1]) } end
     end
@@ -118,6 +132,13 @@ function QC:QuestLog()
 end
 
 function QC:StepDone(step)
+    -- step.alt: other quest IDs that do the same job (a lead-in offered by two
+    -- quest givers, e.g. The Hunter's Path); any one of them counts
+    if step.alt then
+        for _, id in ipairs(step.alt) do
+            if self:StepDone({ id = id }) then return true end
+        end
+    end
     local done = ns.char.questDone
     -- still in your quest log = not turned in, whatever was recorded before
     -- (clears a stale "turned in" flag, e.g. from a misfired event)
@@ -133,9 +154,13 @@ function QC:StepDone(step)
     return false
 end
 
+-- By quest ID when the log reports IDs: many chains repeat one title
+-- ("The Tome of Divinity", "Call of Water"), so a title match would mark every
+-- step of that name as in the log. Titles only for steps without an ID.
 function QC:StepInLog(step)
     local log = self:QuestLog()
-    if step.id and log.ids[step.id] then return true end
+    for _, id in ipairs(step.alt or {}) do if log.ids[id] then return true end end
+    if step.id and next(log.ids) then return log.ids[step.id] or false end
     return step.name and log.titles[lower(step.name)] or false
 end
 
@@ -218,7 +243,25 @@ end
 
 -- where to pick a step up / turn it in (falls back to the chain start)
 function QC:StepStart(chain, step)
+    -- alternative quests: the quest giver of the first one your race can take
+    if step and step.alt then
+        for _, id in ipairs({ step.id, unpack(step.alt) }) do
+            local s = { id = id }
+            if self:StepRaceOK(s) and self:Info(s) then return self:StepStart(chain, s) end
+        end
+    end
     local info = self:Info(step)
+    -- several quest givers (e.g. one per capital): the first one of your
+    -- faction (and race, when the entry lists race IDs)
+    if info and info.starts then
+        local f = ns.PlayerFaction()
+        local _, _, raceID = UnitRace("player")
+        for _, s in ipairs(info.starts) do
+            local raceOK = not (s.races and raceID)
+            for _, r in ipairs((not raceOK and s.races) or {}) do if r == raceID then raceOK = true end end
+            if (not s.faction or s.faction == f) and raceOK then return s end
+        end
+    end
     return (info and info.start) or (step == chain.steps[1] and chain.start) or nil
 end
 

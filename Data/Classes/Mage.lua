@@ -30,18 +30,21 @@ D.classQuests.MAGE = {
       start = { npc = "High Sorcerer Andromath", zone = "Stormwind City", note = "Wizard's Sanctum" },
       zones = { "Redridge Mountains", "Duskwood" },
       note = "Book in the Tower of Ilgalar (Redridge); silk from Duskwood carrion recluses.", confidence = "forever-guide" },
-    { key = "mage38wand", level = 38, faction = "Alliance", optional = true,
-      title = "Journey to the Marsh (Icefury Wand)", reward = "Icefury Wand",
-      steps = { q(1947, "Journey to the Marsh") },
-      start = { npc = "Tabetha", zone = "Dustwallow Marsh", note = "west of Theramore" }, confidence = "forever-guide" },
-    { key = "mage10undead", level = 10, faction = "Horde", races = { "Scourge" },
+    -- Journey to the Marsh > Mage's Wand: Unlocks / Series on wowhead.com/forever (2026-11-21)
+    { key = "mage38wand", level = 30, optional = true,
+      title = "Journey to the Marsh (Mage's Wand)", reward = "Icefury Wand",
+      steps = { q(1947, "Journey to the Marsh"), q(1949, "Hidden Secrets"), q(1950, "Get the Scoop"),
+                q(1951, "Rituals of Power"), q(1948, "Items of Power"), q(1952, "Mage's Wand") },
+      start = { note = "from your capital's mage trainers; Tabetha is west of Theramore" },
+      zones = { "Dustwallow Marsh", "Thousand Needles" }, confidence = "forever-guide" },
+    { key = "mage10undead", level = 10, faction = "Horde", races = { "Scourge", "Troll" },
       title = "The Balnir Farmstead", reward = "Arcane Orb or Arcane Staff",
       steps = { q(1881, "Speak with Anastasia"), q(1882, "The Balnir Farmstead") },
-      start = { npc = "Anastasia Hartwell", zone = "Undercity", note = "Magic Quarter" }, confidence = "forever-guide" },
-    { key = "mage10troll", level = 10, faction = "Horde", races = { "Troll", "Orc" },
+      start = { npc = "Cain Firesong", zone = "Tirisfal Glades", note = "then Anastasia Hartwell, Undercity" }, confidence = "forever-guide" },
+    { key = "mage10troll", level = 10, faction = "Horde", races = { "Orc" },
       title = "Ju-Ju Heaps", reward = "Ley Orb or Ley Staff",
       steps = { q(1883, "Speak with Un'thuwa"), q(1884, "Ju-Ju Heaps") },
-      start = { npc = "Un'thuwa", zone = "Durotar", note = "Sen'jin Village" }, confidence = "forever-guide" },
+      start = { npc = "Thurston Xane", zone = "Thunder Bluff", note = "then Un'thuwa, Sen'jin Village" }, confidence = "forever-guide" },
     { key = "mage15hrobe", level = 15, faction = "Horde",
       title = "Spellfire Robes", reward = "Lesser Spellfire Robes",
       steps = { q(1959, "Report to Anastasia"), q(1960, "Investigate the Alchemist Shop"), q(1961, "Gathering Materials"), q(1962, "Spellfire Robes") },
@@ -75,7 +78,12 @@ Q[1943] = { races = { 2, 5, 8 }, start = { npc = "Anastasia Hartwell", zone = "U
 Q[1944] = { races = { 2, 5, 8 }, start = { npc = "Deino", zone = "Orgrimmar", x = 38.4, y = 85.8 }, finish = { npc = "Deino", zone = "Orgrimmar", x = 38.4, y = 85.8 }, obj = { { item = 7268, name = "Xavian Water Sample", qty = 1 } } } -- Waters of Xavian (level 26)
 Q[1945] = { races = { 2, 5, 8 }, start = { npc = "Deino", zone = "Orgrimmar", x = 38.4, y = 85.8 }, finish = { npc = "Kil'hala", zone = "The Barrens", x = 52.2, y = 31.6 }, obj = { { item = 7270, name = "Laughing Sister's Hair", qty = 12, from = "Laughing Sister", zone = "Ashenvale", x = 60.6, y = 52.4 } } } -- Laughing Sisters (level 26)
 Q[1946] = { requires = { { 1945, "Laughing Sisters" } }, start = { npc = "Kil'hala", zone = "The Barrens", x = 52.2, y = 31.6 }, finish = { npc = "Kil'hala", zone = "The Barrens", x = 52.2, y = 31.6 } } -- Nether-lace Garment (level 26)
-Q[1947] = { start = { npc = "Anastasia Hartwell", zone = "Undercity", x = 85, y = 10.2 }, finish = { npc = "Tabetha", zone = "Dustwallow Marsh", x = 46, y = 57 } } -- Journey to the Marsh (level 38)
+Q[1947] = { starts = { { npc = "Jennea Cannon", zone = "Stormwind City", x = 49.4, y = 86, faction = "Alliance", races = { 1 } }, { npc = "Bink", zone = "Ironforge", x = 27, y = 8.2, faction = "Alliance" }, { npc = "Deino", zone = "Orgrimmar", x = 38.4, y = 85.8, faction = "Horde", races = { 2, 8 } }, { npc = "Ursyn Ghull", zone = "Thunder Bluff", x = 25.6, y = 14.6, faction = "Horde", races = { 6 } }, { npc = "Anastasia Hartwell", zone = "Undercity", x = 85, y = 10.2, faction = "Horde" } }, finish = { npc = "Tabetha", zone = "Dustwallow Marsh", x = 46, y = 57 } } -- Journey to the Marsh (level 38)
+Q[1948] = { requires = { { 1951, "Rituals of Power" } }, start = { npc = "Tabetha", zone = "Dustwallow Marsh", x = 46, y = 57 }, finish = { npc = "Tabetha", zone = "Dustwallow Marsh", x = 46, y = 57 }, obj = { { item = 1529, name = "Jade", qty = 1, from = "Bloodfen Raptor / Mirefin Puddlejumper / Mirefin Murloc", zone = "Dustwallow Marsh", x = 33.9, y = 45.6 }, { item = 7272, name = "Bolt Charged Bramble", qty = 1 }, { item = 7273, name = "Witherbark Totem Stick", qty = 10 } } } -- Items of Power (level 40)
+Q[1949] = { requires = { { 1947, "Journey to the Marsh" } }, start = { npc = "Tabetha", zone = "Dustwallow Marsh", x = 46, y = 57 }, finish = { npc = "Magus Tirth", zone = "Thousand Needles", x = 78.2, y = 75.8 } } -- Hidden Secrets (level 38)
+Q[1950] = { start = { npc = "Magus Tirth", zone = "Thousand Needles", x = 78.2, y = 75.8 }, finish = { npc = "Magus Tirth", zone = "Thousand Needles", x = 78.2, y = 75.8 } } -- Get the Scoop (level 30)
+Q[1951] = { start = { npc = "Magus Tirth", zone = "Thousand Needles", x = 78.2, y = 75.8 }, finish = { npc = "Tabetha", zone = "Dustwallow Marsh", x = 46, y = 57 }, obj = { { item = 7274, name = "Rituals of Power", qty = 1 } } } -- Rituals of Power (level 40)
+Q[1952] = { requires = { { 1948, "Items of Power" } }, start = { npc = "Tabetha", zone = "Dustwallow Marsh", x = 46, y = 57 }, finish = { npc = "Tabetha", zone = "Dustwallow Marsh", x = 46, y = 57 } } -- Mage's Wand (level 40)
 Q[1959] = { races = { 2, 5, 8 }, start = { npc = "Cain Firesong", zone = "Tirisfal Glades", x = 61.8, y = 52.4 }, finish = { npc = "Anastasia Hartwell", zone = "Undercity", x = 85, y = 10.2 } } -- Report to Anastasia (level 15)
 Q[1960] = { races = { 2, 5, 8 }, start = { npc = "Anastasia Hartwell", zone = "Undercity", x = 85, y = 10.2 }, finish = { npc = "Anastasia Hartwell", zone = "Undercity", x = 85, y = 10.2 }, obj = { { item = 7292, name = "Filled Containment Coffer", qty = 3, from = "Filled Containment Coffer", zone = "Undercity", x = 55.8, y = 71.3, mapID = 1458 }, { item = 7247, name = "Chest of Containment Coffers", qty = 1, from = "Chest of Containment Coffers", zone = "Stormwind City", x = 42.9, y = 81.9, mapID = 1453 }, { item = 7308, name = "Cantation of Manifestation", qty = 1, from = "Cantation of Manifestation", zone = "Stormwind City", x = 44, y = 82.4, mapID = 1453 } } } -- Investigate the Alchemist Shop (level 16)
 Q[1961] = { races = { 2, 5, 8 }, start = { npc = "Anastasia Hartwell", zone = "Undercity", x = 85, y = 10.2 }, finish = { npc = "Josef Gregorian", zone = "Undercity", x = 70.6, y = 30.4 }, obj = { { item = 2589, name = "Linen Cloth", qty = 10, from = "Scarlet Zealot / Scarlet Missionary", zone = "Undercity", x = 22.1, y = 18.5 }, { item = 7293, name = "Dalaran Mana Gem", qty = 6, from = "Dalaran Apprentice (13-14) / Dalaran Protector (14-15)", zone = "Silverpine Forest", x = 52.5, y = 64.8, mapID = 1421, areaMin = 13 } } } -- Gathering Materials (level 15)

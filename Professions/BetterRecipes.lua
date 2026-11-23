@@ -129,14 +129,26 @@ function PP:AddBetterRecipes(ctx, p, cache, goalCap, best)
         local recipeItem = whIn and whIn.items and whIn.items[1]
         local itemName = (recipeItem and recipeItem.name) or (v and v.item)
         local inBags = itemName and ns.Inventory:Count({ itemID = recipeItem and recipeItem.item, name = itemName }) or 0
+        -- the recipe item itself needs a higher character level: you cannot learn
+        -- it yet (what it makes may need a level too - that does not matter here)
+        local itemID = (recipeItem and recipeItem.item) or ns.Inventory:IDForName(itemName)
+        local useLevel = ns.Inventory:RequiredLevel(itemID)
+        local tooLow = useLevel and useLevel > ctx.level
+            and ("%s needs level %d (you are %d)"):format(itemName, useLevel, ctx.level) or nil
         if inBags > 0 then
-            local need = (whIn and whIn.req) or c.from
+            -- the skill needed to USE the recipe item: the highest one any source
+            -- gives. Wowhead's spell "req" can be lower than the item's (Manual:
+            -- Mageweave Bandage: spell 150, item "Requires First Aid (210)").
+            local need
+            for _, r in ipairs({ whIn and whIn.req or 0, c.from or 0, v and v.skill or 0 }) do
+                if r > 0 and (not need or r > need) then need = r end
+            end
             local early = need and p.skill < need
             AddTask(ctx, {
                 id = ("learn:%s:%s"):format(p.key, c.name), kind = "obtain", prof = p.key,
                 title = ("Learn %s: use %s from your bags"):format(c.name, itemName),
                 detail = ("You have %s. Right-click it in your bags to learn the recipe."):format(itemName),
-                blocked = early and ("Usable at %s %d (you have %d)"):format(p.name, need, p.skill) or nil,
+                blocked = tooLow or (early and ("Usable at %s %d (you have %d)"):format(p.name, need, p.skill)) or nil,
                 confidence = "client", value = 6 * prio(p.key),
                 reasons = { "recipe in your bags" },
             })
@@ -204,7 +216,9 @@ function PP:AddBetterRecipes(ctx, p, cache, goalCap, best)
             local caution, safety, effMin = CautionText(src.zone, ctx.level)
             local viaAH = safety == "danger" and not ns.db.allowDangerous and not isTrainer
             local blocked
-            if src.none and src.kind == "trainer-wowhead" then
+            if tooLow then
+                blocked = tooLow
+            elseif src.none and src.kind == "trainer-wowhead" then
                 blocked = "No trainer of your faction teaches it (Wowhead Forever)"
             elseif src.none then
                 blocked = ("Trainers you checked (%s) don't teach it - see its source in your %s window"):format(table.concat(visited, ", "), p.name)

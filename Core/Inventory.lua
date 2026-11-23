@@ -55,6 +55,18 @@ function I:IDForName(name)
     return name and ns.db and ns.db.itemIDs[string.lower(name)]
 end
 
+-- The item's OWN required character level (GetItemInfo minLevel). For a recipe
+-- this is the recipe item itself, not what it makes: a recipe tooltip also
+-- shows the product's lines (Manual: Superior Healing Potion shows the potion's
+-- "Requires Level 35"), which does not stop you learning or crafting it.
+-- nil when the item data is not loaded yet.
+function I:RequiredLevel(itemID)
+    if not (itemID and GetItemInfo) then return nil end
+    local ok, name, _, _, _, minLevel = pcall(GetItemInfo, itemID)
+    if ok and name then return minLevel or 0 end
+    return nil
+end
+
 function I:MarkDirty() dirty = true end
 
 function I:ScanBags()
